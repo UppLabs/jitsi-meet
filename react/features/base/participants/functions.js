@@ -103,7 +103,7 @@ export function getNormalizedDisplayName(name: string) {
         return undefined;
     }
 
-    return name.trim().substring(0, MAX_DISPLAY_NAME_LENGTH);
+    return name.trim();
 }
 
 /**
@@ -170,7 +170,15 @@ export function getParticipantDisplayName(
 
     if (participant) {
         if (participant.name) {
-            return participant.name;
+            let _name = participant.name;
+
+            const parsedName = _name.split('::');
+
+            if (parsedName.length >= 3) {
+                _name = parsedName[2] || 'Hidden';
+            }
+
+            return _name;
         }
 
         if (participant.local) {

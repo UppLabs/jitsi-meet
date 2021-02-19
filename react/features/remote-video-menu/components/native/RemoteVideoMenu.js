@@ -105,9 +105,9 @@ class RemoteVideoMenu extends PureComponent<Props> {
                 { !_disableKick && <KickButton { ...buttonProps } /> }
                 <GrantModeratorButton { ...buttonProps } />
                 <PinButton { ...buttonProps } />
-                <PrivateMessageButton { ...buttonProps } />
-                <MuteEveryoneElseButton { ...buttonProps } />
-                <ConnectionStatusButton { ...buttonProps } />
+                {/* <PrivateMessageButton { ...buttonProps } /> */}
+                {/* <MuteEveryoneElseButton { ...buttonProps } /> */}
+                {/* <ConnectionStatusButton { ...buttonProps } /> */}
             </BottomSheet>
         );
     }
@@ -174,8 +174,8 @@ function _mapStateToProps(state, ownProps) {
 
     return {
         _bottomSheetStyles: ColorSchemeRegistry.get(state, 'BottomSheet'),
-        _disableKick: Boolean(disableKick),
-        _disableRemoteMute: Boolean(disableRemoteMute),
+        _disableKick: true, // Boolean(disableKick),
+        _disableRemoteMute: true, // Boolean(disableRemoteMute),
         _isOpen: isDialogOpen(state, RemoteVideoMenu_),
         _participantDisplayName: getParticipantDisplayName(state, participant.id)
     };
