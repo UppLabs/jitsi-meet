@@ -154,6 +154,16 @@ function _participant(state: Object = {}, action) {
                 }
             }
 
+            const _name = participant.name || '';
+            const _avatarURL = participant.avatarURL || '';
+
+            const parsedName = _name.split('::');
+
+            if (parsedName.length >= 3) {
+                newState.name = parsedName[2] || '';
+                newState.avatarURL = parsedName[3] || _avatarURL;
+            }
+
             return newState;
         }
         break;
@@ -209,8 +219,18 @@ function _participantJoined({ participant }) {
         id || (id = LOCAL_PARTICIPANT_DEFAULT_ID);
     }
 
+    let _name = name || '';
+    let _avatarURL = avatarURL;
+
+    const parsedName = _name.split('::');
+
+    if (parsedName.length >= 3) {
+        _name = parsedName[2] || '';
+        _avatarURL = parsedName[3] || avatarURL;
+    }
+
     return {
-        avatarURL,
+        avatarURL: _avatarURL,
         botType,
         conference,
         connectionStatus,
@@ -221,7 +241,7 @@ function _participantJoined({ participant }) {
         isJigasi,
         loadableAvatarUrl,
         local: local || false,
-        name,
+        name: _name,
         pinned: pinned || false,
         presence,
         role: role || PARTICIPANT_ROLE.NONE

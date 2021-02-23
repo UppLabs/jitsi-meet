@@ -158,24 +158,18 @@ class Avatar<P: Props> extends PureComponent<P, State> {
             url: undefined
         };
 
-        const parsedName = (_initialsBase || '').split('::');
-
-        const name = parsedName?.length >= 3 ? parsedName[2] || '' : _initialsBase;
-        const avatarFromName = parsedName[3];
-
-        const avatarURL = avatarFromName || url;
 
         // _loadableAvatarUrl is validated that it can be loaded, but uri (if present) is not, so
         // we still need to do a check for that. And an explicitly provided URI is higher priority than
         // an avatar URL anyhow.
-        const effectiveURL = (!avatarFailed && avatarURL) || _loadableAvatarUrl;
+        const effectiveURL = (!avatarFailed && url) || _loadableAvatarUrl;
 
         if (effectiveURL) {
             avatarProps.onAvatarLoadError = this._onAvatarLoadError;
             avatarProps.url = effectiveURL;
         }
 
-        const initials = getInitials(name);
+        const initials = getInitials(_initialsBase);
 
         if (initials) {
             if (dynamicColor) {

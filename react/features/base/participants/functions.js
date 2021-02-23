@@ -170,15 +170,7 @@ export function getParticipantDisplayName(
 
     if (participant) {
         if (participant.name) {
-            let _name = participant.name;
-
-            const parsedName = _name.split('::');
-
-            if (parsedName.length >= 3) {
-                _name = parsedName[2] || 'Hidden';
-            }
-
-            return _name;
+            return participant.name || 'Hidden';
         }
 
         if (participant.local) {
@@ -190,7 +182,7 @@ export function getParticipantDisplayName(
 
     return typeof interfaceConfig === 'object'
         ? interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME
-        : 'Fellow Jitster';
+        : 'Hidden';
 }
 
 /**
