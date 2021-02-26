@@ -24,11 +24,11 @@ BackButtonRegistry.onHardwareBackPress = BackButtonRegistry.onHardwareBackPress.
 MiddlewareRegistry.register(() => next => action => {
     switch (action.type) {
     case APP_WILL_MOUNT:
-        BackHandler.addEventListener('hardwareBackPress', BackButtonRegistry.onHardwareBackPress);
+        // BackHandler.addEventListener('hardwareBackPress', BackButtonRegistry.onHardwareBackPress);
         break;
 
     case APP_WILL_UNMOUNT:
-        BackHandler.removeEventListener('hardwareBackPress', BackButtonRegistry.onHardwareBackPress);
+        // BackHandler.removeEventListener('hardwareBackPress', BackButtonRegistry.onHardwareBackPress);
         break;
     }
 

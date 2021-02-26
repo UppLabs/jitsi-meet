@@ -160,7 +160,7 @@ function _participant(state: Object = {}, action) {
             const parsedName = _name.split('::');
 
             if (parsedName.length >= 3) {
-                newState.name = parsedName[2] || '';
+                newState.displayName = parsedName[2] || '';
                 newState.avatarURL = parsedName[3] || _avatarURL;
             }
 
@@ -219,13 +219,13 @@ function _participantJoined({ participant }) {
         id || (id = LOCAL_PARTICIPANT_DEFAULT_ID);
     }
 
-    let _name = name || '';
+    let parsedDisplayName = name || '';
     let _avatarURL = avatarURL;
 
-    const parsedName = _name.split('::');
+    const parsedName = parsedDisplayName.split('::');
 
     if (parsedName.length >= 3) {
-        _name = parsedName[2] || '';
+        parsedDisplayName = parsedName[2] || '';
         _avatarURL = parsedName[3] || avatarURL;
     }
 
@@ -241,7 +241,8 @@ function _participantJoined({ participant }) {
         isJigasi,
         loadableAvatarUrl,
         local: local || false,
-        name: _name,
+        name,
+        displayName: parsedDisplayName,
         pinned: pinned || false,
         presence,
         role: role || PARTICIPANT_ROLE.NONE
