@@ -178,3 +178,9 @@ export const VIDEO_SHARE_BUTTON_ENABLED = 'video-share.enabled';
  * Default: disabled (false).
  */
 export const WELCOME_PAGE_ENABLED = 'welcomepage.enabled';
+
+/**
+ * UPPLABS Custom Flag indicating if the view only participants should be hidden.
+ * Default: disabled (false).
+ */
+export const HIDE_VIEW_ONLY_PARTICIPANTS = 'hide-view-only-participants.enabled';

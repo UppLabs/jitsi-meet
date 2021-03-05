@@ -1,6 +1,6 @@
 // @flow
 
-import { ReducerRegistry, set } from '../redux';
+import { ReducerRegistry, set } from "../redux";
 
 import {
     DOMINANT_SPEAKER_CHANGED,
@@ -9,9 +9,9 @@ import {
     PARTICIPANT_LEFT,
     PARTICIPANT_UPDATED,
     PIN_PARTICIPANT,
-    SET_LOADABLE_AVATAR_URL
-} from './actionTypes';
-import { LOCAL_PARTICIPANT_DEFAULT_ID, PARTICIPANT_ROLE } from './constants';
+    SET_LOADABLE_AVATAR_URL,
+} from "./actionTypes";
+import { LOCAL_PARTICIPANT_DEFAULT_ID, PARTICIPANT_ROLE } from "./constants";
 
 /**
  * Participant object.
@@ -39,16 +39,15 @@ declare var APP: Object;
  * @type {string[]}
  */
 const PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE = [
-
     // The following properties identify the participant:
-    'conference',
-    'id',
-    'local',
+    "conference",
+    "id",
+    "local",
 
     // The following properties can only be modified through property-dedicated
     // actions:
-    'dominantSpeaker',
-    'pinned'
+    "dominantSpeaker",
+    "pinned",
 ];
 
 /**
@@ -62,37 +61,46 @@ const PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE = [
  * added/removed/modified.
  * @returns {Participant[]}
  */
-ReducerRegistry.register('features/base/participants', (state = [], action) => {
+ReducerRegistry.register("features/base/participants", (state = [], action) => {
     switch (action.type) {
-    case SET_LOADABLE_AVATAR_URL:
-    case DOMINANT_SPEAKER_CHANGED:
-    case PARTICIPANT_ID_CHANGED:
-    case PARTICIPANT_UPDATED:
-    case PIN_PARTICIPANT:
-        return state.map(p => _participant(p, action));
+        case SET_LOADABLE_AVATAR_URL:
+        case DOMINANT_SPEAKER_CHANGED:
+        case PARTICIPANT_ID_CHANGED:
+        case PARTICIPANT_UPDATED:
+        case PIN_PARTICIPANT:
+            return state.map((p) => _participant(p, action));
 
-    case PARTICIPANT_JOINED:
-        return [ ...state, _participantJoined(action) ];
+        case PARTICIPANT_JOINED: {
+            const _participantData = _participantJoined(action);
+            
+            if(!_participantData) {
+                return [ ...state ];
+            }
 
-    case PARTICIPANT_LEFT: {
-        // XXX A remote participant is uniquely identified by their id in a
-        // specific JitsiConference instance. The local participant is uniquely
-        // identified by the very fact that there is only one local participant
-        // (and the fact that the local participant "joins" at the beginning of
-        // the app and "leaves" at the end of the app).
-        const { conference, id } = action.participant;
+            return [ ...state, _participantData ];
+        }
 
-        return state.filter(p =>
-            !(
-                p.id === id
+        case PARTICIPANT_LEFT: {
+            // XXX A remote participant is uniquely identified by their id in a
+            // specific JitsiConference instance. The local participant is uniquely
+            // identified by the very fact that there is only one local participant
+            // (and the fact that the local participant "joins" at the beginning of
+            // the app and "leaves" at the end of the app).
+            const { conference, id } = action.participant;
 
-                    // XXX Do not allow collisions in the IDs of the local
-                    // participant and a remote participant cause the removal of
-                    // the local participant when the remote participant's
-                    // removal is requested.
-                    && p.conference === conference
-                    && (conference || p.local)));
-    }
+            return state.filter(
+                (p) =>
+                    !(
+                        p.id === id &&
+                        // XXX Do not allow collisions in the IDs of the local
+                        // participant and a remote participant cause the removal of
+                        // the local participant when the remote participant's
+                        // removal is requested.
+                        p.conference === conference &&
+                        (conference || p.local)
+                    )
+            );
+        }
     }
 
     return state;
@@ -112,66 +120,73 @@ ReducerRegistry.register('features/base/participants', (state = [], action) => {
  */
 function _participant(state: Object = {}, action) {
     switch (action.type) {
-    case DOMINANT_SPEAKER_CHANGED:
-        // Only one dominant speaker is allowed.
-        return (
-            set(state, 'dominantSpeaker', state.id === action.participant.id));
+        case DOMINANT_SPEAKER_CHANGED:
+            // Only one dominant speaker is allowed.
+            return set(
+                state,
+                "dominantSpeaker",
+                state.id === action.participant.id
+            );
 
-    case PARTICIPANT_ID_CHANGED: {
-        // A participant is identified by an id-conference pair. Only the local
-        // participant is with an undefined conference.
-        const { conference } = action;
+        case PARTICIPANT_ID_CHANGED: {
+            // A participant is identified by an id-conference pair. Only the local
+            // participant is with an undefined conference.
+            const { conference } = action;
 
-        if (state.id === action.oldValue
-                && state.conference === conference
-                && (conference || state.local)) {
-            return {
-                ...state,
-                id: action.newValue
-            };
-        }
-        break;
-    }
-
-    case SET_LOADABLE_AVATAR_URL:
-    case PARTICIPANT_UPDATED: {
-        const { participant } = action; // eslint-disable-line no-shadow
-        let { id } = participant;
-        const { local } = participant;
-
-        if (!id && local) {
-            id = LOCAL_PARTICIPANT_DEFAULT_ID;
+            if (
+                state.id === action.oldValue &&
+                state.conference === conference &&
+                (conference || state.local)
+            ) {
+                return {
+                    ...state,
+                    id: action.newValue,
+                };
+            }
+            break;
         }
 
-        if (state.id === id) {
-            const newState = { ...state };
+        case SET_LOADABLE_AVATAR_URL:
+        case PARTICIPANT_UPDATED: {
+            const { participant } = action; // eslint-disable-line no-shadow
+            let { id } = participant;
+            const { local } = participant;
 
-            for (const key in participant) {
-                if (participant.hasOwnProperty(key)
-                        && PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE.indexOf(key)
-                            === -1) {
-                    newState[key] = participant[key];
+            if (!id && local) {
+                id = LOCAL_PARTICIPANT_DEFAULT_ID;
+            }
+
+            if (state.id === id) {
+                const newState = { ...state };
+
+                for (const key in participant) {
+                    if (
+                        participant.hasOwnProperty(key) &&
+                        PARTICIPANT_PROPS_TO_OMIT_WHEN_UPDATE.indexOf(key) ===
+                            -1
+                    ) {
+                        newState[key] = participant[key];
+                    }
                 }
+
+                const _name = participant.name || "";
+                const _avatarURL = participant.avatarURL || "";
+
+                const parsedName = _name.split("::");
+
+                if (parsedName.length >= 3) {
+                    newState.displayName = parsedName[2] || "";
+                    newState.avatarURL = parsedName[3] || _avatarURL;
+                }
+
+                return newState;
             }
-
-            const _name = participant.name || '';
-            const _avatarURL = participant.avatarURL || '';
-
-            const parsedName = _name.split('::');
-
-            if (parsedName.length >= 3) {
-                newState.displayName = parsedName[2] || '';
-                newState.avatarURL = parsedName[3] || _avatarURL;
-            }
-
-            return newState;
+            break;
         }
-        break;
-    }
 
-    case PIN_PARTICIPANT:
-        // Currently, only one pinned participant is allowed.
-        return set(state, 'pinned', state.id === action.participant.id);
+        case PIN_PARTICIPANT:
+            // Currently, only one pinned participant is allowed.
+            return set(state, "pinned", state.id === action.participant.id);
     }
 
     return state;
@@ -192,6 +207,7 @@ function _participant(state: Object = {}, action) {
 function _participantJoined({ participant }) {
     const {
         avatarURL,
+        displayName,
         botType,
         connectionStatus,
         dominantSpeaker,
@@ -218,19 +234,9 @@ function _participantJoined({ participant }) {
         // id
         id || (id = LOCAL_PARTICIPANT_DEFAULT_ID);
     }
-
-    let parsedDisplayName = name || '';
-    let _avatarURL = avatarURL;
-
-    const parsedName = parsedDisplayName.split('::');
-
-    if (parsedName.length >= 3) {
-        parsedDisplayName = parsedName[2] || '';
-        _avatarURL = parsedName[3] || avatarURL;
-    }
-
+    
     return {
-        avatarURL: _avatarURL,
+        avatarURL,
         botType,
         conference,
         connectionStatus,
@@ -242,7 +248,7 @@ function _participantJoined({ participant }) {
         loadableAvatarUrl,
         local: local || false,
         name,
-        displayName: parsedDisplayName,
+        displayName,
         pinned: pinned || false,
         presence,
         role: role || PARTICIPANT_ROLE.NONE

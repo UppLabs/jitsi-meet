@@ -75,7 +75,7 @@ declare var APP: Object;
  * @private
  * @returns {void}
  */
-function _addConferenceListeners(conference, dispatch) {
+function _addConferenceListeners(conference, dispatch, getState) {
     // A simple logger for conference errors received through
     // the listener. These errors are not handled now, but logged.
     conference.on(JitsiConferenceEvents.CONFERENCE_ERROR,
@@ -178,7 +178,7 @@ function _addConferenceListeners(conference, dispatch) {
 
     conference.on(
         JitsiConferenceEvents.USER_JOINED,
-        (id, user) => commonUserJoinedHandling({ dispatch }, conference, user));
+        (id, user) => commonUserJoinedHandling({ dispatch, getState }, conference, user));
     conference.on(
         JitsiConferenceEvents.USER_LEFT,
         (id, user) => commonUserLeftHandling({ dispatch }, conference, user));
@@ -448,7 +448,7 @@ export function createConference() {
 
         dispatch(_conferenceWillJoin(conference));
 
-        _addConferenceListeners(conference, dispatch);
+        _addConferenceListeners(conference, dispatch, getState);
 
         sendLocalParticipant(state, conference);
 

@@ -150,6 +150,10 @@ function _electParticipantInLargeVideo(state) {
 
             id = videoTrack && videoTrack.participantId;
 
+            if (!participants.find(p => p.id === id)) {
+                id = null;
+            }
+
             if (!id) {
                 // 4. It's possible there is no participant with visible video.
                 //    This can happen for a number of reasons:

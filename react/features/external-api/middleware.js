@@ -140,22 +140,22 @@ MiddlewareRegistry.register(store => next => action => {
         break;
 
     case PARTICIPANT_LEFT:
-        APP.API.notifyUserLeft(action.participant.id);
+        // APP.API.notifyUserLeft(action.participant.id);
         break;
 
     case PARTICIPANT_JOINED: {
-        const { participant } = action;
-        const { id, local, name } = participant;
+        // const { participant } = action;
+        // const { id, local, name } = participant;
 
         // The version of external api outside of middleware did not emit
         // the local participant being created.
-        if (!local) {
-            APP.API.notifyUserJoined(id, {
-                displayName: name,
-                formattedDisplayName: appendSuffix(
-                    name || interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME)
-            });
-        }
+        // if (!local) {
+            // APP.API.notifyUserJoined(id, {
+            //     displayName: name,
+            //     formattedDisplayName: appendSuffix(
+            //         name || interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME)
+            // });
+        // }
 
         break;
     }

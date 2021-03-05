@@ -353,18 +353,19 @@ function replaceStoredTracks(oldTrack, newTrack) {
  */
 export function trackAdded(track) {
     return (dispatch, getState) => {
-        track.on(
-            JitsiTrackEvents.TRACK_MUTE_CHANGED,
-            () => dispatch(trackMutedChanged(track)));
-        track.on(
-            JitsiTrackEvents.TRACK_VIDEOTYPE_CHANGED,
-            type => dispatch(trackVideoTypeChanged(track, type)));
+        const participants = getState()['features/base/participants'];
 
         // participantId
         const local = track.isLocal();
         const mediaType = track.getType();
         let isReceivingData, noDataFromSourceNotificationInfo, participantId;
 
+        track.on(
+            JitsiTrackEvents.TRACK_MUTE_CHANGED,
+            () => dispatch(trackMutedChanged(track)));
+        track.on(
+            JitsiTrackEvents.TRACK_VIDEOTYPE_CHANGED,
+            type => dispatch(trackVideoTypeChanged(track, type)));
         if (local) {
             // Reset the no data from src notification state when we change the track, as it's context is set
             // on a per device basis.
@@ -402,6 +403,15 @@ export function trackAdded(track) {
         } else {
             participantId = track.getParticipantId();
             isReceivingData = true;
+
+            const participant = participantId ? participants.find(p => p.id === participantId) :  null;
+            if(!participant) {
+                console.log("participant not found, track not added");
+                track.dispose().then(() => {
+                    dispatch(trackRemoved(track))
+                })
+                return;
+            }
         }
 
         return dispatch({
