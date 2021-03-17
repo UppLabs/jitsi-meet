@@ -67,7 +67,7 @@ export function _addLocalTracksToConference(
  * @returns {void}
  */
 export function commonUserJoinedHandling(
-    { dispatch, getState }: Object,
+    { dispatch, state }: Object,
     conference: Object,
     user: Object
 ) {
@@ -77,7 +77,7 @@ export function commonUserJoinedHandling(
     const parsedName = (displayName || "").split("::");
 
     const maybeHideUser = getFeatureFlag(
-        getState?.() || {},
+        state || {},
         HIDE_VIEW_ONLY_PARTICIPANTS,
         false
     );

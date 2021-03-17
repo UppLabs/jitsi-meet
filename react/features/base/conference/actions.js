@@ -186,7 +186,7 @@ function _addConferenceListeners(conference, dispatch, state) {
 
     conference.on(
         JitsiConferenceEvents.USER_JOINED,
-        (id, user) => commonUserJoinedHandling({ dispatch, getState }, conference, user));
+        (id, user) => commonUserJoinedHandling({ dispatch, state }, conference, user));
     conference.on(
         JitsiConferenceEvents.USER_LEFT,
         (id, user) => commonUserLeftHandling({ dispatch }, conference, user));
